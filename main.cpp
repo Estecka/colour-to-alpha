@@ -6,7 +6,7 @@
 /*   By: abaur <abaur@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 22:54:58 by abaur             #+#    #+#             */
-/*   Updated: 2024/06/29 17:31:15 by abaur            ###   ########.fr       */
+/*   Updated: 2024/06/29 17:48:40 by abaur            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ int main(int argc, const char** argv){
 	ArgToColour(argv[2], top);
 	ColourErase(bottom, top, result);
 	std::cout
-		<< "Top:      #" << std::hex << std::setfill('0') << std::setw(6) << ColourToCode(top)    << std::endl
-		<< "Bottom:   #" << std::hex << std::setfill('0') << std::setw(6) << ColourToCode(bottom) << std::endl
-		<< "Result:   #" << std::hex << std::setfill('0') << std::setw(6) << ColourToCode(result) << std::endl
+		<< "Top:      #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(top)    << std::endl
+		<< "Bottom:   #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(bottom) << std::endl
+		<< "Result:   #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(result) << std::endl
 		;
 
 
@@ -71,7 +71,7 @@ int main(int argc, const char** argv){
 		diff[i] = std::min(255.0, std::abs(result[i] - expected[i]));
 
 	std::cout
-		<< "Expected: #" << std::hex << std::setfill('0') << std::setw(6) << ColourToCode(expected) << std::endl
-		<< "Diff:     #" << std::hex << std::setfill('0') << std::setw(6) << ColourToCode(diff)     << std::endl
+		<< "Expected: #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(expected) << std::endl
+		<< "Diff:     #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(diff)     << std::endl
 		;
 }
