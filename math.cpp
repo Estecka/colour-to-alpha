@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   colours.hpp                                        :+:      :+:    :+:   */
+/*   math.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abaur <abaur@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/28 14:23:58 by abaur             #+#    #+#             */
-/*   Updated: 2024/06/29 16:35:52 by abaur            ###   ########.fr       */
+/*   Created: 2024/06/29 16:39:30 by abaur             #+#    #+#             */
+/*   Updated: 2024/06/29 16:42:28 by abaur            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "math.hpp"
 
-/**
- * Index 0 to 2 correspond to the RGB channels, in no particular order.
- * Index 3 is the Alpha channel
- */
-typedef double RgbaDouble[4];
+double lerp(double a, double b, double t){
+	return a*(1-t) + b*t;
+}
 
-RgbaDouble& ColourErase(const RgbaDouble& bottom, const RgbaDouble& top, RgbaDouble& result);
+double remap(double iMin, double iMax, double oMin, double oMax, double n){
+	return oMin + (oMax-oMin)*(n-iMin)/(iMax-iMin);
+}
