@@ -6,7 +6,7 @@
 /*   By: abaur <abaur@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 22:54:58 by abaur             #+#    #+#             */
-/*   Updated: 2024/06/29 22:57:19 by abaur            ###   ########.fr       */
+/*   Updated: 2024/06/30 00:07:55 by abaur            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,26 @@
 typedef double RgbaDouble[4];
 
 /**
-** Parse a string formatted as #AARRGGBB or #RRGGBB
-** Leading # is optional.
+** Parse a string formatted as #RRGGBB or #RRGGBB@alpha.
+** RGB are hex digits, alpha is a double between 0 and 1.
 */
 static RgbaDouble& ArgToColour(const char* arg, RgbaDouble& result){
-	if (*arg =='#')
-		++arg;
+	if (*arg !='#')
+		throw new std::invalid_argument("Missing leading #");
+	++arg;
 
-	unsigned int code = std::stol(arg, NULL, 16);
+	size_t digitCount;
+	unsigned int code = std::stol(arg, &digitCount, 16);
+	if (digitCount != 6)
+		throw new std::invalid_argument("Not RRGGBB format");
 	for (int i=0; i<4; ++i)
 		result[i] = ((code >> 8*i) & 0xff)/ 255.0;
+
+	result[3] = 1.00;
+	arg += digitCount;
+	if (*arg == '@'){
+		result[3] = std::stod(++arg);
+	}
 
 	return result;
 }
@@ -48,7 +58,9 @@ static unsigned int ColourToCode(const RgbaDouble& colour){
 
 
 static void PrintColour(std::ostream& output, const RgbaDouble& colour){
-	output << '#' << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(colour);
+	output << '#' << std::setfill('0') << std::setw(6) << std::hex << (0xffffff & ColourToCode(colour))
+	       << '@' << std::setfill(' ') << std::setw(5) << std::left << std::setprecision(3) << colour[3]
+	       ;
 }
 
 static std::stringstream line1, line2;
@@ -65,10 +77,8 @@ static void CompareResult(std::ostream& output, RgbaDouble& result, const char* 
 	for (int i=0; i<4; ++i)
 		diff[i] = std::min(255.0, std::abs(result[i] - expected[i]));
 
-	output << ' ';
-	PrintColour(output, expected);
-	output << ' ';
-	PrintColour(output, diff);
+	output << ' '; PrintColour(output, expected);
+	output << " #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(diff);
 }
 
 
