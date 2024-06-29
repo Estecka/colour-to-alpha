@@ -6,7 +6,7 @@
 /*   By: abaur <abaur@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 22:54:58 by abaur             #+#    #+#             */
-/*   Updated: 2024/06/30 00:07:55 by abaur            ###   ########.fr       */
+/*   Updated: 2024/06/30 01:31:55 by abaur            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@ typedef double RgbaDouble[4];
 ** RGB are hex digits, alpha is a double between 0 and 1.
 */
 static RgbaDouble& ArgToColour(const char* arg, RgbaDouble& result){
-	if (*arg !='#')
-		throw new std::invalid_argument("Missing leading #");
-	++arg;
+	if (*arg =='#')
+		++arg;
 
 	size_t digitCount;
 	unsigned int code = std::stol(arg, &digitCount, 16);
@@ -78,7 +77,8 @@ static void CompareResult(std::ostream& output, RgbaDouble& result, const char* 
 		diff[i] = std::min(255.0, std::abs(result[i] - expected[i]));
 
 	output << ' '; PrintColour(output, expected);
-	output << " #" << std::hex << std::setfill('0') << std::setw(8) << ColourToCode(diff);
+	for (int i=0; i<4; ++i)
+		output << ' ' << std::hex << std::setfill('0') << std::setw(2) << (int)(diff[i]*255);
 }
 
 
@@ -92,7 +92,7 @@ int main(int argc, const char** argv){
 	RgbaDouble bottom, top;
 	ArgToColour(argv[1], bottom);
 	ArgToColour(argv[2], top);
-	line1 << "Top:    "; PrintColour(line1, top   );
+	line1 << "   Top: "; PrintColour(line1, top   );
 	line2 << "Bottom: "; PrintColour(line2, bottom);
 
 
@@ -105,11 +105,11 @@ int main(int argc, const char** argv){
 	ColourErase(bottom, top, lResult);
 	LinearToPerceptual(lResult, lResult);
 
-	line1 << "  Perceptual: "; PrintColour(line1, pResult);
-	line2 << "  Linear:     "; PrintColour(line2, lResult);
+	line1 << "      Linear: "; PrintColour(line1, lResult);
+	line2 << "  Perceptual: "; PrintColour(line2, pResult);
 
-	if (argc >= 4) CompareResult(line1, pResult, argv[3]);
-	if (argc >= 5) CompareResult(line2, lResult, argv[4]);
+	if (argc >= 4) CompareResult(line1, lResult, argv[3]);
+	if (argc >= 5) CompareResult(line2, pResult, argv[4]);
 
 	Flush();
 }
