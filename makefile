@@ -1,4 +1,8 @@
-SRCS = main.cpp math.cpp ColourErase.cpp
+SRCS = main.cpp \
+	math.cpp \
+	ColourErase.cpp \
+	ColourSpace.cpp \
+
 OBJS = ${SRCS:.cpp=.o}
 NAME = colour-to-alpha.out
 

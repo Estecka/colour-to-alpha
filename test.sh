@@ -4,21 +4,14 @@ set -eu -o pipefail
 
 make;
 
-# Note: The expected colours  where obtained in Gimp, by setting the top layer's
-# blend space and composite space to **Perceptual**.
-# Perceptual *is not* the default space used  by Gimp but I'm not buff enough on
-# colour theory to know how either space work or how they would affect the code.
-# For now, I simply went with the math that was the most instinctive to me.
-#
-# Conversely, the  opposite  Normal  blend  operation  would  need  to have  its
-# its top layer's  composite space set to  Perceptual too, in order to yield the
-# original colour.
+echo;
+echo "         Input     Blend-space  Result    Expected  Diff";
 
-
-#                              #Bottom     #Top        #Expected
+#                              #Bottom     Top         Expected    Expected
+#                                                      Perceptual  Linear
 # Greyscales
-echo && ./colour-to-alpha.out "#ff808080" "#ffffffff" "#7f000000"
-echo && ./colour-to-alpha.out "#ff808080" "#ff000000" "#7fffffff"
+echo && ./colour-to-alpha.out "#ff808080" "#ffffffff" "#7f000000" "#c8000000"
+echo && ./colour-to-alpha.out "#ff808080" "#ff000000" "#7fffffff" "#37ffffff"
 echo && ./colour-to-alpha.out "#ff808080" "#80ffffff" "#bf555555"
 echo && ./colour-to-alpha.out "#ff808080" "#80000000" "#bfaaaaaa"
 
