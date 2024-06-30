@@ -6,7 +6,7 @@
 /*   By: abaur <abaur@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 22:54:58 by abaur             #+#    #+#             */
-/*   Updated: 2024/06/30 01:31:55 by abaur            ###   ########.fr       */
+/*   Updated: 2024/06/30 02:14:33 by abaur            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,12 @@ static void CompareResult(std::ostream& output, RgbaDouble& result, const char* 
 	for (int i=0; i<4; ++i)
 		diff[i] = std::min(255.0, std::abs(result[i] - expected[i]));
 
-	output << ' '; PrintColour(output, expected);
+	output << ' ';
+	PrintColour(output, expected);
+
+	int printOrder[] = {2, 1, 0, 3};
 	for (int i=0; i<4; ++i)
-		output << ' ' << std::hex << std::setfill('0') << std::setw(2) << (int)(diff[i]*255);
+		output << ' ' << std::hex << std::setfill('0') << std::setw(2) << (int)(diff[printOrder[i]]*255);
 }
 
 

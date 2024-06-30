@@ -5,7 +5,7 @@ set -eu -o pipefail
 make;
 
 echo;
-echo "         Input         Blend-space  Result        Expected      Diff";
+echo "         Input         Blend-space  Result        Expected     Diff";
 # Blend-space here  corresponds to both the blend space  and the composite space
 # of the top layer in Gimp.
 #
