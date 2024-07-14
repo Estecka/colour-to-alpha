@@ -13,30 +13,19 @@
 #include "math.hpp"
 #include "colours.hpp"
 
+// The index of the alpha channel in RgbaDouble
 #define ALPHA	3
 
 /**
  * Reproduction of Gimp's "Colour Erase" blending mode.
- * The  blending mode  does effectively  the  same job as  its "Colour to Alpha"
- * filter, but takes a few less parameters.
  * 
- * Colour erase is the inverse  operation of the Normal/Behind blending Mode. In
- * broad strokes, if normal blending can be defined as:  
- * 	`lerp(bottom, top, topAlpha) = result`  
- * then we're looking to solve:  
- * 	`lerp (bottom, result, 1/topAlpha) = top`
+ * See the Readme for an exhaustive walkthrough of the math.
  * 
- * Remember  that  this equation  uses  the  layer names  from  Normal blending!
- * 'Bottom' and 'result' in Normal  correspond to  the 'top' and 'bottom' layers
- * in Colour Erase (bottom becomes top!); only those two values are known.
- * 'Top' in  Normal corresponds  to the 'result' in  Colour Erase; `topAlpha` in
- * the  equation  is  unknown, so  the  first  step  will be  to figure out  the
- * resulting opacity.
- * 
- * @implnote While gimp  supports  out-of-gamut  colours, I don't know  what the
- * expected behaviour would be  for these. Here, all channels of all colours are
+ * @implnote  Although Gimp supports out-of-gamut colours, I don't know what the
+ * expected behaviour  would be for these. Here, all channels of all colours are
  * assumed to be comprised between 0 and 1 (inclusive).
- * This code remains nonetheless protected against all divisions by 0.
+ * This code remains nonetheless  protected against all divisions by 0, and will
+ * not crash when fed with outlandish values.
  * 
  * @param bottom	The colour of the bottom layer.
  * @param top   	The colour of the top layer.
@@ -45,32 +34,37 @@
  */
 RgbaDouble& ColourErase(const RgbaDouble& bottom, const RgbaDouble& top, RgbaDouble& result)
 {
+	// Compute the resulting Alpha based on input RGB.
 	result[ALPHA] = 0;
 	for (int i=0; i<3; ++i){
+		// Find which extreme each of the resulting RGB channels tends toward.
 		double direction = (bottom[i] < top[i]) ? 0 : 1;
 
 		if (top[i] != direction){
+			// Find a candidate Alpha based on each channel alone.
 			double alpha = remap(top[i],direction, 0,1, bottom[i]);
+			// Elect the highest Alpha as the correct one.
 			if (alpha > result[ALPHA])
 				result[ALPHA] = alpha;
 		}
 	}
 
-	// If Top  has some transparency, attenuate the effect of the filter. Higher
-	// top opacity  leads  to  lower result opacity, so  multiply the complement
-	// instead of multiplying directly.
-	result[ALPHA] = 1 - ( top[ALPHA] * (1-result[ALPHA]) );
+	// Clamp Alpha to [0-1].
+	// (It's already guaranteed to not be negative at this point.)
+	if (result[ALPHA] > 1)
+		result[ALPHA] = 1;
 
-	// Finally compute the resulting RGB.
-	// Linearly extrapolate from Top toward Bottom. 
-	// If the result is fully transparent, Gimp preserves the original RGB.
+	// Apply Top opacity
+	result[ALPHA] = lerp(1, result[ALPHA], top[ALPHA]);
+
+	// Compute resulting RGB based on resulting Alpha
 	for (int i=0; i<3; ++i)
 	if  (result[ALPHA] != 0)
 		result[i] = lerp(top[i], bottom[i], 1/result[ALPHA]);
 	else
 		result[i] = bottom[i];
 
-	// Bottom's opacity has no effect on the resulting RGB, so apply it last.
+	// Apply Bottom opacity
 	result[ALPHA] *= bottom[ALPHA];
 
 	return result;
