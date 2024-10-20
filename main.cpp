@@ -6,7 +6,7 @@
 /*   By: abaur <abaur@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 22:54:58 by abaur             #+#    #+#             */
-/*   Updated: 2024/06/30 02:14:33 by abaur            ###   ########.fr       */
+/*   Updated: 2024/10/20 14:02:19 by abaur            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <sstream>
 #include <string>
 #include <stdexcept>
+#include <cmath>
 
 #include "colours.hpp"
 #include "ColourSpace.hpp"
@@ -50,7 +51,7 @@ static unsigned int ColourToCode(const RgbaDouble& colour){
 	unsigned int code = 0;
 
 	for (int i=0; i<4; ++i)
-		code |= (0xff & (unsigned int)(colour[i] * 255)) << 8*i;
+		code |= (0xff & (unsigned int)std::round(colour[i] * 255)) << 8*i;
 
 	return code;
 }
